@@ -1,0 +1,15 @@
+body{
+	background-image:url(1.jpg);
+	background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+a{
+	font-size:20px;
+	color: #f6f5ec;
+	text-decoration: none;
+}
+h1{
+	color: #f6f5ec;
+}

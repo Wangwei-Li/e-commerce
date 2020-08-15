@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssm.mapper.AdminMapper">
+	<!-- List<User> getAllUser(); -->
+	<select id="getAllUser" resultType="User">
+		select * from user
+	</select>
+	<!-- User getUserByUid(Integer uid); -->
+	<select id="getUserByUid" resultType="User">
+		select * from user where
+		uid=#{uid}
+	</select>
+	<!-- void UpdateUser(User user); -->
+	<update id="UpdateUser">
+		update user set
+		upwd=#{upwd},
+		uname=#{uname},
+		sex=#{sex},
+		year=#{year},
+		uaddress=#{uaddress}
+		where uid=#{uid}
+	</update>
+	<!-- void InsertUser(User user); -->
+	<insert id="InsertUser">
+		insert into user(uid,upwd,uname,sex,year,uaddress)
+		values(#{uid},#{upwd},#{uname},#{sex},#{year},#{uaddress})
+	</insert>
+	<!-- void DeleteUser(Integer uid); -->
+	<delete id="DeleteUser">
+		delete from user where uid=#{uid}
+	</delete>
+
+
+
+	<!-- List<Market> getAllMarket(); -->
+	<select id="getAllMarket" resultType="Market">
+		select * from market
+	</select>
+	<!-- Market getMarketByMid(Integer mid); -->
+	<select id="getMarketByMid" resultType="Market">
+		select * from market
+		where mid=#{mid}
+	</select>
+	<!-- void UpdateMarket(Market market); -->
+	<update id="UpdateMarket">
+		update market set
+		mpwd=#{mpwd},
+		mname=#{mname},
+		maddress=#{maddress}
+		where mid=#{mid}
+	</update>
+	<!-- void InsertMarket(Market market); -->
+	<insert id="InsertMarket">
+		insert into market(mid,mpwd,mname,maddress)
+		values(#{mid},#{mpwd},#{mname},#{maddress})
+	</insert>
+	<!-- void DeleteMarket(Integer mid); -->
+	<delete id="DeleteMarket">
+		delete from market where mid=#{mid}
+	</delete>
+
+
+	<!-- 查看所有订单 List<BuyInfor> SelectAllBuyInfor() -->
+	<resultMap type="BuyInfor" id="AllBuyInfor">
+		<id column="bid" property="bid" />
+		<result column="mid" property="goods.market.mid" />
+		<result column="mname" property="goods.market.mname" />
+		<result column="maddress" property="goods.market.maddress" />
+		<result column="gid" property="goods.gid" />
+		<result column="gname" property="goods.gname" />
+		<result column="price" property="goods.price" />
+		<result column="uid" property="user.uid" />
+		<result column="recipient" property="recipient" />
+		<result column="phone" property="phone" />
+		<result column="raddress" property="raddress" />
+	</resultMap>
+	<select id="SelectAllBuyInfor" resultMap="AllBuyInfor">
+		select * from buyinfor
+		left join market on buyinfor.mid=market.mid
+	</select>
+
+	<!-- 获取指定订单信息 BuyInfor selectBuyInfor(Integer bid) -->
+	<select id="selectBuyInfor" resultMap="AllBuyInfor">
+		select * from buyinfor
+		left join market on buyinfor.mid=market.mid where bid=#{bid}
+	</select>
+	<!-- 查看所有发货信息 List<SendInfor> SelectAllSendInfor() -->
+	<resultMap type="SendInfor" id="AllSendInfor">
+		<id column="bid" property="buyinfor.bid" />
+		<result column="gname" property="buyinfor.goods.gname" />
+		<result column="uid" property="buyinfor.user.uid" />
+		<result column="mname" property="buyinfor.goods.market.mname" />
+		<result column="maddress"
+			property="buyinfor.goods.market.maddress" />
+		<result column="recipient" property="buyinfor.recipient" />
+		<result column="phone" property="buyinfor.phone" />
+		<result column="raddress" property="buyinfor.raddress" />
+	</resultMap>
+	<select id="SelectAllSendInfor" resultMap="AllSendInfor">
+		select
+		sendinfor.bid,gname,uid,buyinfor.mname,market.maddress,recipient,phone,raddress
+		from (sendinfor left join buyinfor on sendinfor.bid=buyinfor.bid) left
+		join
+		market on buyinfor.mid=market.mid
+	</select>
+
+	<!-- List<Employee> selectAllEmp() -->
+	<select id="selectAllEmp" resultType="Employee">
+		select * from employee
+	</select>
+
+	<!-- void insertEmp(Employee emp) -->
+	<insert id="insertEmp">
+		insert into employee(ename,ephone,car,scope)
+		values(#{ename},#{ephone},#{car},#{scope})
+	</insert>
+
+	<!-- Employee getEmpByEid(Integer eid) -->
+	<select id="getEmpByEid" resultType="Employee">
+		select * from employee where
+		eid=#{eid}
+	</select>
+
+	<!-- void updateEmp(Employee emp) -->
+	<insert id="updateEmp">
+		update employee set
+		ename=#{ename},ephone=#{ephone},car=#{car},scope=#{scope}
+		where
+		eid=#{eid}
+	</insert>
+
+	<!-- void deleteEmp(Integer eid) -->
+	<delete id="deleteEmp">
+		delete from employee where eid=#{eid}
+	</delete>
+
+	<!-- 查看配送表中是否已存在此订单 Give selectOneGive(Integer bid) -->
+	<resultMap type="Give" id="selectOneGive">
+		<id column="bid" property="buy.bid" />
+	</resultMap>
+	<select id="selectOneGive" resultMap="selectOneGive">
+		select bid from give where
+		bid=#{bid}
+	</select>
+	<!-- 添加配送信息 void insertGive(Give give) -->
+	<insert id="insertGiveInfor">
+		insert into give(bid,eid,gtime)
+		values(#{buy.bid},#{emp.eid},#{gtime})
+	</insert>
+
+	<!-- 查看所有配送信息 List<Give> selectAllGiveInfor(); -->
+	<resultMap type="Give" id="allGiveInfor">
+		<id column="bid" property="buy.bid" />
+		<result column="gname" property="buy.goods.gname" />
+		<result column="maddress" property="buy.goods.market.maddress" />
+		<result column="raddress" property="buy.raddress" />
+		<result column="recipient" property="buy.recipient" />
+		<result column="phone" property="buy.phone" />
+		<result column="ename" property="emp.ename" />
+		<result column="ephone" property="emp.ephone" />
+		<result column="gtime" property="gtime" />
+	</resultMap>
+	<select id="selectAllGiveInfor" resultMap="allGiveInfor">
+		select * from ((give
+		left join buyinfor on give.bid=buyinfor.bid)left join
+		employee on
+		give.eid=employee.eid) left join market on
+		buyinfor.mid=market.mid
+		where give.bid=buyinfor.bid
+	</select>
+
+	<!-- 查看所有已签收订单 List<Receive> selectAllReceive(); -->
+	<resultMap type="Receive" id="allReceive">
+		<id column="bid" property="buy.bid" />
+		<result column="gname" property="buy.goods.gname" />
+		<result column="maddress" property="buy.goods.market.maddress" />
+		<result column="raddress" property="buy.raddress" />
+		<result column="recipient" property="buy.recipient" />
+		<result column="phone" property="buy.phone" />
+		<result column="rtime" property="rtime" />
+	</resultMap>
+	<select id="selectAllReceive" resultMap="allReceive">
+		select * from (receive left join buyinfor on receive.bid=buyinfor.bid)left
+		join market on buyinfor.mid=market.mid where receive.bid=buyinfor.bid
+	</select>
+</mapper>     

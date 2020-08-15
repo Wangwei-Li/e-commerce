@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssm.mapper.LoginMapper">
+	<!-- Admin selectAdmin(Integer did,String dpwd); -->
+	<select id="selectAdmin" resultType="Admin">
+		select * from admin where did=#{param1} and dpwd=#{param2}
+	</select>
+
+	<!-- User selectUser(Integer uid,String upwd); -->
+	<select id="selectUser" resultType="User">
+		select * from user where uid=#{param1} and upwd=#{param2}
+	</select>
+
+	<!-- Market selectMarket(Integer mid,String mpwd); -->
+	<select id="selectMarket" resultType="Market">
+		select * from market where mid=#{param1} and mpwd=#{param2}
+	</select>
+	
+	<!-- User getUserByUid(Integer uid); -->
+	<select id="getUserByUid" resultType="User">
+		select * from user where uid=#{uid}
+	</select>
+	
+	<!-- void InsertUser(User user); -->
+	<insert id="InsertUser">
+		insert into user(uid,upwd,uname,sex,year,uaddress) values(#{uid},#{upwd},#{uname},#{sex},#{year},#{uaddress})
+	</insert>
+	
+	<!-- Market getMarketByMid(Integer mid); -->
+	<select id="getMarketByMid" resultType="Market">
+		select * from market where mid=#{mid}
+	</select>
+	
+	<!-- void InsertMarket(Market market); -->
+	<insert id="InsertMarket">
+		insert into market(mid,mpwd,mname,maddress) values(#{mid},#{mpwd},#{mname},#{maddress})
+	</insert>
+</mapper>

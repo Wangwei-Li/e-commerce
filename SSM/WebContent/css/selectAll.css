@@ -1,0 +1,21 @@
+body{
+	background-image:url(1.jpg);
+	background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+table{
+	font-size:20px;
+	color:#f6f5ec;
+	position: absolute;
+	top:35%;
+	left:35%;
+}
+a{
+	color: #130c0e;
+	text-decoration: none;
+}
+h1{
+	color: #f6f5ec;
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+      PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+      "http://mybatis.org/dtd/mybatis-3-config.dtd">
+      
+<configuration>
+
+	<!-- 引入资源文件，一般用于JDBC连接数据库 ,通常情况下，此操作交给spring管理-->
+	<!-- <properties resource="jdbc.propreties"></properties> --> 
+	
+	<settings>
+		<!-- 将下划线映射成驼峰，例如user_name——userName -->
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<!-- 是否开启延迟加载 -->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<!-- 是否查询所有数据 -->
+		<setting name="aggressiveLazyLoading" value="false"/>
+		<!-- 是否开启二级缓存 -->
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+	
+<!-- 	<typeAliases> -->
+<!-- 		为类设置别名  type：Java类型，若只设置type，默认的别名就是类名，且不区分大小写-->
+<!-- 		<typeAlias type="com.ssm.bean.User" alias="u"/> --> 
+<!-- 		<package name="com.ssm.bean"/> -->
+<!-- 	</typeAliases>           此设置可以在spring中进行-->
+	
+	<plugins>
+		<!-- 分页插件，可以实现分页功能 -->
+		<plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+	</plugins>
+	
+<!-- 	引入映射文件 --> 
+<!-- 	<mappers> -->
+<!-- 		<mapper resource="EmpMapper.xml"/> --> 
+<!-- 		<package name="com.ssm.mapper"/> -->
+<!-- 	</mappers>               此设置可以在spring中进行-->
+	
+</configuration>

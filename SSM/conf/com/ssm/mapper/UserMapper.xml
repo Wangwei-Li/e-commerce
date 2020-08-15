@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssm.mapper.UserMapper">
+	<!-- void updateMyUser(User user); -->
+	<update id="updateMyUser">
+		update user set
+		upwd=#{upwd},
+		uname=#{uname},
+		sex=#{sex},
+		year=#{year},
+		uaddress=#{uaddress}
+		where uid=#{uid}
+	</update>
+
+
+	<resultMap type="Goods" id="goodsMap">
+		<id column="gid" property="gid" />
+		<result column="gname" property="gname" />
+		<result column="price" property="price" />
+		<association property="market" javaType="Market">
+			<id column="mid" property="mid" />
+			<result column="mname" property="mname" />
+			<result column="maddress" property="maddress" />
+		</association>
+	</resultMap>
+	<!-- List<Goods> userSelectAllGoods(); -->
+	<select id="userSelectAllGoods" resultMap="goodsMap">
+		select
+		g.gid,g.gname,g.price,m.mid,m.mname,m.maddress
+		from goods g
+		left join
+		market m
+		on
+		g.mid=m.mid
+	</select>
+
+	<!-- Goods userSelectGoods(Integer gid); -->
+	<select id="userSelectGoods" resultMap="goodsMap">
+		select
+		g.gid,g.gname,g.price,m.mid,m.mname,m.maddress
+		from goods g
+		left join
+		market m
+		on
+		g.mid=m.mid
+		where g.gid=#{gid}
+	</select>
+
+	<!-- void insertBuyInfor(BuyInfor buyInfor); -->
+	<insert id="insertBuyInfor">
+		insert into
+		buyinfor(mid,mname,gid,gname,price,uid,recipient,phone,raddress)
+		value(#{goods.market.mid},#{goods.market.mname},#{goods.gid},#{goods.gname},#{goods.price},#{user.uid},#{recipient},#{phone},#{raddress})
+	</insert>
+
+	<resultMap type="BuyInfor" id="buyinfor">
+		<id column="bid" property="bid" />
+		<result column="mid" property="goods.market.mid" />
+		<result column="mname" property="goods.market.mname" />
+		<result column="gid" property="goods.gid" />
+		<result column="gname" property="goods.gname" />
+		<result column="price" property="goods.price" />
+		<result column="uid" property="user.uid" />
+		<result column="recipient" property="recipient" />
+		<result column="phone" property="phone" />
+		<result column="raddress" property="raddress" />
+	</resultMap>
+	<!-- List<BuyInfor> selectUserBuyInfor(Integer uid); -->
+	<select id="selectUserBuyInfor" resultMap="buyinfor">
+		select * from buyinfor
+		where uid=#{uid}
+	</select>
+
+	<resultMap type="SendInfor" id="resultSendInfors">
+		<id column="sid" property="sid" />
+		<result column="bid" property="buyinfor.bid" />
+	</resultMap>
+	<!-- List<SendInfor> userSelectAllSendInfor(Integer uid); -->
+	<select id="userSelectAllSendInfor" resultMap="resultSendInfors">
+		select
+		sendinfor.sid,sendinfor.bid from sendinfor left join buyinfor on
+		sendinfor.bid=buyinfor.bid where buyinfor.uid=#{uid}
+	</select>
+
+	<!-- 查看物品派送情况 List<Give> userSelectGive(Integer uid); -->
+	<resultMap type="Give" id="userGiveInfor">
+		<id column="bid" property="buy.bid" />
+		<result column="gname" property="buy.goods.gname" />
+		<result column="maddress" property="buy.goods.market.maddress" />
+		<result column="raddress" property="buy.raddress" />
+		<result column="recipient" property="buy.recipient" />
+		<result column="phone" property="buy.phone" />
+		<result column="ename" property="emp.ename" />
+		<result column="ephone" property="emp.ephone" />
+		<result column="gtime" property="gtime" />
+	</resultMap>
+	<select id="userSelectGive" resultMap="userGiveInfor">
+		select * from ((give
+		left
+		join buyinfor on give.bid=buyinfor.bid)left join
+		employee on
+		give.eid=employee.eid) left join market on
+		buyinfor.mid=market.mid
+		where buyinfor.uid=#{uid}
+	</select>
+
+	<!-- 在签收表中查看是否存在此订单 Integer userSelectOneReceive(Integer bid); -->
+	<select id="userSelectOneReceive" resultType="Integer">
+		select bid from receive where bid=#{bid}
+	</select>
+	<!-- 签收物品，把信息存入签收表中 void userInsertReceive(Integer bid,String rtime); -->
+	<insert id="userInsertReceive">
+		insert into receive(bid,rtime)
+		value(#{param1},#{param2})
+	</insert>
+
+	<!-- 查看已签收情况 List<Receive> userSelectReceive(Integer uid); -->
+	<resultMap type="Receive" id="userReceive">
+		<id column="bid" property="buy.bid" />
+		<result column="gname" property="buy.goods.gname" />
+		<result column="rtime" property="rtime" />
+	</resultMap>
+	<select id="userSelectReceive" resultMap="userReceive">
+		select * from (receive
+		left join buyinfor on receive.bid=buyinfor.bid)left
+		join market on
+		buyinfor.mid=market.mid where buyinfor.uid=#{uid}
+	</select>
+	
+	<!-- 查看日志 String userSelectLogs(Integer uid); -->
+	<select id="userSelectLogs" resultType="String">
+	 select ulogs from userlog where uid=#{uid}
+	</select>
+	<!-- 查看是否存在此用户 Integer userSelectuserLog(Integer uid)-->
+	<select id="userSelectUserLog" resultType="Integer">
+	select uid from userlog where uid=#{uid}
+	</select>
+	<!-- 添加日志 void userInsertLogs(Integer uid);-->
+	<insert id="userInsertLogs">
+	insert into userlog(uid) value(#{uid})
+	</insert>
+	<!-- 修改日志 void userUpdateLogs(String log,Integer uid); -->
+	<update id="userUpdateLogs">
+	update userlog set ulogs=#{param1} where uid=#{param2}
+	</update>
+</mapper>     

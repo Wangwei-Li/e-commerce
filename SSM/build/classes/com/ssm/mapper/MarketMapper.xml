@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+      "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssm.mapper.MarketMapper">
+
+	<!-- Market selectMyMarket(Integer mid); -->
+	<select id="selectMyMarket" resultType="Market">
+		select * from market
+		where mid=#{mid}
+	</select>
+
+	<!-- void updateMyMarket(Market market); -->
+	<update id="updateMyMarket">
+		update market set
+		mpwd=#{mpwd},
+		mname=#{mname},
+		maddress=#{maddress}
+		where mid=#{mid}
+	</update>
+
+	<resultMap type="Goods" id="goodsMap">
+		<id column="gid" property="gid" />
+		<result column="gname" property="gname" />
+		<result column="price" property="price" />
+		<association property="market" javaType="Market">
+			<id column="mid" property="mid" />
+			<result column="mname" property="mname" />
+			<result column="maddress" property="maddress" />
+		</association>
+	</resultMap>
+	<!-- List<Goods> selectMyGoods(Integer mid); -->
+	<select id="selectMyGoods" resultMap="goodsMap">
+		select
+		g.gid,g.gname,g.price,m.mid,m.mname,m.maddress
+		from goods g
+		left join
+		market m
+		on
+		g.mid=m.mid
+		where g.mid=#{mid}
+	</select>
+
+	<!-- Goods selectOne(Integer gid); -->
+	<select id="selectOne" resultMap="goodsMap">
+		select
+		g.gid,g.gname,g.price,m.mid,m.mname,m.maddress
+		from goods g
+		left join
+		market m
+		on g.mid=m.mid
+		where g.gid=#{gid}
+	</select>
+
+	<!-- void insertGoods(Goods goods); -->
+	<insert id="insertGoods">
+		insert into goods(gid,gname,price,mid)
+		values(#{gid},#{gname},#{price},#{market.mid})
+	</insert>
+
+	<!-- void updateGoods(Goods goods); -->
+	<update id="updateGoods">
+		update goods set
+		gname=#{gname},
+		price=#{price}
+		where
+		gid=#{gid}
+	</update>
+
+	<!-- void deleteGoods(Integer gid) -->
+	<delete id="deleteGoods">
+		delete from goods where gid=#{gid}
+	</delete>
+
+	<resultMap type="BuyInfor" id="buyinfor">
+		<id column="bid" property="bid" />
+		<result column="mid" property="goods.market.mid" />
+		<result column="mname" property="goods.market.mname" />
+		<result column="gid" property="goods.gid" />
+		<result column="gname" property="goods.gname" />
+		<result column="price" property="goods.price" />
+		<result column="uid" property="user.uid" />
+		<result column="recipient" property="recipient" />
+		<result column="phone" property="phone" />
+		<result column="raddress" property="raddress" />
+	</resultMap>
+	<!-- List<BuyInfor> selectBuyInfors(Integer mid); -->
+	<select id="selectBuyInfors" resultMap="buyinfor">
+		select * from buyinfor
+		where mid=#{mid}
+	</select>
+
+
+	<resultMap type="SendInfor" id="resultSendInfor">
+		<id column="sid" property="sid" />
+		<result column="bid" property="buyinfor.bid" />
+	</resultMap>
+	<!-- SendInfor selectResult(Integer bid); -->
+	<select id="selectResult" resultMap="resultSendInfor">
+		select * from sendinfor
+		where bid=#{bid}
+	</select>
+
+	<!-- void insertSendInfor(Integer bid); -->
+	<insert id="insertSendInfor">
+		insert into sendinfor(bid) values(#{bid})
+	</insert>
+
+	<!-- List<SendInfor> selectSendInfors(Integer mid); -->
+	<select id="selectSendInfors" resultMap="resultSendInfor">
+		select
+		sendinfor.sid,sendinfor.bid from sendinfor left join buyinfor on
+		sendinfor.bid=buyinfor.bid where buyinfor.mid=#{mid}
+	</select>
+
+	<!-- 查看已被派送订单 List<Give> marketSelectGive(Integer mid); -->
+	<resultMap type="Give" id="marketSelectGiveInfor">
+		<id column="bid" property="buy.bid" />
+		<result column="gname" property="buy.goods.gname" />
+		<result column="maddress" property="buy.goods.market.maddress" />
+		<result column="raddress" property="buy.raddress" />
+		<result column="recipient" property="buy.recipient" />
+		<result column="phone" property="buy.phone" />
+		<result column="ename" property="emp.ename" />
+		<result column="ephone" property="emp.ephone" />
+		<result column="gtime" property="gtime" />
+	</resultMap>
+	<select id="marketSelectGive" resultMap="marketSelectGiveInfor">
+		select * from ((give
+		left join buyinfor on give.bid=buyinfor.bid)left join
+		employee on
+		give.eid=employee.eid) left join market on
+		buyinfor.mid=market.mid
+		where market.mid=#{mid}
+	</select>
+	
+	<!-- 查看已被签收订单 List<Receive> marketSelectReceive(Integer mid); -->
+	<resultMap type="Receive" id="marketSelectReceiveInfor">
+		<id column="bid" property="buy.bid" />
+		<result column="gname" property="buy.goods.gname" />
+		<result column="maddress" property="buy.goods.market.maddress" />
+		<result column="raddress" property="buy.raddress" />
+		<result column="recipient" property="buy.recipient" />
+		<result column="phone" property="buy.phone" />
+		<result column="rtime" property="rtime" />
+	</resultMap>
+	<select id="marketSelectReceive" resultMap="marketSelectReceiveInfor">
+		select * from (receive left join buyinfor on receive.bid=buyinfor.bid)left
+		join market on buyinfor.mid=market.mid where buyinfor.mid=#{mid}
+	</select>
+	
+	<!-- 查看日志 String marketSelectLogs(Integer mid); -->
+	<select id="marketSelectLogs" resultType="String">
+	 select mlogs from marketlog where mid=#{mid}
+	</select>
+	<!-- 查看是否存在此用户 Integer marketSelectMarketLog(Integer mid)-->
+	<select id="marketSelectMarketLog" resultType="Integer">
+	select mid from marketlog where mid=#{mid}
+	</select>
+	<!-- 添加日志 void marketInsertLogs(Integer mid);-->
+	<insert id="marketInsertLogs">
+	insert into marketlog(mid) value(#{mid})
+	</insert>
+	<!-- 修改日志 void marketUpdateLogs(String log,Integer mid); -->
+	<update id="marketUpdateLogs">
+	update marketlog set mlogs=#{param1} where mid=#{param2}
+	</update>
+</mapper>     

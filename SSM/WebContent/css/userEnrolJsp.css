@@ -1,0 +1,22 @@
+body{
+	background-image:url(1.jpg);
+	background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+h1{
+	position: absolute;
+	top:30%;
+	left:46%;
+	font-size: 50px;
+	color: #F5F5F5;
+}
+form{
+	position: absolute;
+	top:45%;
+	left:45%;
+}
+a{
+	text-decoration: none;
+}
